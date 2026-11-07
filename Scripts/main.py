@@ -48,12 +48,20 @@ with (np.load(mnist_path, allow_pickle=False) as data):
 
 # main cycle
 i = 0
-epochs = 3
+epochs = 10
+
 for epoch in range(epochs):
     for i in range(len(x_train)):
+
         x = x_train[i].reshape(784, 1) / 255
+        label = y_train[i]
         y_true = np.zeros((10, 1))
-        y_true[y_train[i], 0] = 1
+        y_true[label, 0] = 1
+
+
+        # x = x_train[i].reshape(784, 1) / 255
+        # y_true = np.zeros((10, 1))
+        # y_true[y_train[i], 0] = 1
 
         # Output Layer
         Z_h = W1 @ x - b1
@@ -66,9 +74,22 @@ for epoch in range(epochs):
         db1 = -alpha                             # (10, 1)
 
         #Gradient descent
-        n = 0.1 # Learning rate
+        n = 0.0001 # Learning rate
         W1 = W1 - n * dW1
         b1 = b1 - n * db1
+
+    print(f"The epoch {epoch+1} has finished")
+
+    test_accuracy = True
+
+    if test_accuracy is True:
+        correct = 0
+        for image, test_label in zip(x_test, y_test):
+            x = image.reshape(784, 1) / 255
+            most_probable = np.argmax(W1 @ x - b1)
+            if test_label == most_probable:
+                correct += 1
+        print(f"The accuracy of the model is {correct / len(y_test):.2%}")
 
 arrays = {
     "W1": W1.tolist(),
