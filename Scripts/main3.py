@@ -44,9 +44,15 @@ with (np.load(mnist_path, allow_pickle=False) as data):
 
 # main cycle
 i = 0
-epochs = 100
+epochs = 200
 
 for epoch in range(epochs):
+
+    batch_size = 64
+    sum_dW1 = np.zeros_like(W1)
+    sum_db1 = np.zeros_like(b1)
+    batch_count = 0
+    n = 0.0001
     for i in range(len(x_train)):
 
         x = x_train[i].reshape(784, 1) / 255
@@ -69,10 +75,19 @@ for epoch in range(epochs):
         dW1 = alpha @ x.T                        # (10, 784)
         db1 = -alpha                             # (10, 1)
 
-        #Gradient descent
-        n = 0.0001 # Learning rate
-        W1 = W1 - n * dW1
-        b1 = b1 - n * db1
+
+
+        sum_dW1 += dW1
+        sum_db1 += db1
+        batch_count += 1
+
+        if batch_count == batch_size or i + 1 == len(x_train):
+            W1 -= n * (sum_dW1 / batch_count)
+            b1 -= n * (sum_db1 / batch_count)
+
+            sum_dW1.fill(0)
+            sum_db1.fill(0)
+            batch_count = 0
 
     print(f"The epoch {epoch+1} has finished")
 
