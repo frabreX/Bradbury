@@ -1,5 +1,6 @@
-.idea/
 .venv/
+.idea/
 __pycache__/
 *.py[cod]
 /media/
+/Scripts/weights.json

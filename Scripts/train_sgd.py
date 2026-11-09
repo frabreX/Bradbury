@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import json
+from pathlib import Path
 
 
 def softmax(Z_0):
@@ -13,25 +14,29 @@ def cross_entropy(softmax_o, y_true):
 
 
 #Saving the weights
-path = "weights.json"
-
-mnist_path = "mnist.npz"
-
-W1 = np.zeros((10, 784))
-b1 = np.zeros((10, 1))
+script_dir = Path(__file__).resolve().parent
+path = script_dir / "weights.json"
+mnist_path = script_dir / "mnist.npz"
 
 if os.path.exists(path):
+    print("Weights have already been generated")
+
     with open(path, "r") as f:
         arrays = json.load(f)
-        saved_W1 = np.array(arrays["W1"])
-        saved_b1 = np.array(arrays["b1"])
+        W1 = np.array(arrays["W1"])
+        b1 = np.array(arrays["b1"])
 
-    if saved_W1.shape == W1.shape and saved_b1.shape == b1.shape:
-        W1 = saved_W1
-        b1 = saved_b1
-        print("Weights have already been generated")
-    else:
-        print("Saved weights have incompatible shapes. Starting with zero weights.")
+else:
+    W1 = np.random.randn(10, 784)
+    b1 = np.random.randn(10, 1)
+
+    arrays = {
+        "W1": W1.tolist(),
+        "b1": b1.tolist(),
+    }
+
+    with open(path, "w") as f:
+        json.dump(arrays, f)
 
 #Input and output data
 
@@ -44,7 +49,7 @@ with (np.load(mnist_path, allow_pickle=False) as data):
 
 # main cycle
 i = 0
-epochs = 100
+epochs = 10
 
 for epoch in range(epochs):
     for i in range(len(x_train)):

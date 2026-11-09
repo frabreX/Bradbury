@@ -1,6 +1,6 @@
 import numpy as np
-import os
 import json
+from pathlib import Path
 
 
 def softmax(Z_0):
@@ -13,29 +13,15 @@ def cross_entropy(softmax_o, y_true):
 
 
 #Saving the weights
-path = "weights.json"
+script_dir = Path(__file__).resolve().parent
+path = script_dir / "weights.json"
+mnist_path = script_dir / "mnist.npz"
 
-mnist_path = "mnist.npz"
-
-if os.path.exists(path):
-    print("Weights have already been generated")
-
-    with open(path, "r") as f:
-        arrays = json.load(f)
-        W1 = np.array(arrays["W1"])
-        b1 = np.array(arrays["b1"])
-
-else:
-    W1 = np.random.randn(10, 784)
-    b1 = np.random.randn(10, 1)
-
-    arrays = {
-        "W1": W1.tolist(),
-        "b1": b1.tolist(),
-    }
-
-    with open(path, "w") as f:
-        json.dump(arrays, f)
+checkpoint = path if path.exists() else script_dir / "baseline_weights.json"
+with checkpoint.open(encoding="utf-8") as f:
+    arrays = json.load(f)
+W1 = np.array(arrays["W1"])
+b1 = np.array(arrays["b1"])
 
 #Input and output data
 

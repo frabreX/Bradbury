@@ -27,7 +27,10 @@ def load_prediction(sample_index=None):
         image = images[sample_index]
         actual = int(dataset["y_test"][sample_index])
 
-    weights = json.loads((scripts / "weights.json").read_text(encoding="utf-8"))
+    checkpoint = scripts / "weights.json"
+    if not checkpoint.exists():
+        checkpoint = scripts / "baseline_weights.json"
+    weights = json.loads(checkpoint.read_text(encoding="utf-8"))
     pixels = image.reshape(-1, 1) / 255
     logits = np.asarray(weights["W1"]) @ pixels - np.asarray(weights["b1"])
     # Shifting the logits keeps the exponentials finite and preserves the probabilities.

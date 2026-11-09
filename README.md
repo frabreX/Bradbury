@@ -1,45 +1,38 @@
 # Bradbury
 
-Bradbury is a Python and NumPy project for classifying handwritten digits from the MNIST dataset. It uses a single-layer softmax classifier and trains it with stochastic gradient descent.
+A handwritten-digit classifier built with Python and NumPy. It flattens 28 × 28 MNIST images and uses a single linear layer with softmax to score the ten digits.
 
-## Setup
+## Quick start
 
-From the repository root, install NumPy and switch to the `Scripts` directory so the scripts can find the included dataset and weights.
-
-```sh
-python -m pip install numpy
-cd Scripts
-```
-
-## Run
+From the repository root:
 
 ```sh
-python tester.py
+python -m pip install -r requirements.txt
+python Scripts/predict_digit.py
+python Scripts/evaluate_accuracy.py
 ```
 
-The tester selects a random MNIST test image and prints its label, the model's class probabilities, and its prediction.
+The included baseline scores **91.23%** on the 10,000 MNIST test images. The prediction script picks a random test image and prints its label and the ten class probabilities.
 
-```sh
-python main.py
-```
+## Train a model
 
-The training script loads `weights.json` if present, trains for three epochs on `mnist.npz`, and saves the updated parameters to `weights.json`.
+| Script | Training method |
+| --- | --- |
+| `Scripts/train_sgd.py` | Sample-by-sample SGD with random initialization |
+| `Scripts/train_sgd_zero_init.py` | Sample-by-sample SGD with zero initialization |
+| `Scripts/train_minibatch.py` | Mini-batch SGD with batches of 64 |
 
-## Animated tester
+Run a trainer with Python. Each trainer reads the bundled `Scripts/mnist.npz`, resumes from a compatible local `Scripts/weights.json` when available, and saves its trained weights there. Prediction, evaluation, and animation prefer that checkpoint and fall back to the bundled baseline.
 
-From the repository root, install Manim Community and render the prediction:
+## Animation
+
+[Digit prediction demo](demos/digit-classifier.mp4) · [MNIST overview](demos/bradbury-mnist.mp4)
+
+Install Manim Community separately to render the scene.
 
 ```sh
 python -m pip install manim
-python -m manim -pqh Scripts/tester_manim.py DigitClassifier
+python -m manim -pqh Scripts/animate_prediction.py DigitClassifier
 ```
 
-The animation shows the input pixels, the model's ten softmax probabilities, and how the predicted digit compares with the MNIST label. Manim saves the MP4 under `media/videos/`.
-
-Each run picks a random MNIST test sample and shows its index below the image. To replay a specific sample, set the zero-based `BRADBURY_SAMPLE` environment variable before running Manim. In PowerShell, use `$env:BRADBURY_SAMPLE = "8"` and clear it afterward with `Remove-Item Env:BRADBURY_SAMPLE`. In Bash, prefix the render command with `BRADBURY_SAMPLE=8`.
-
-To watch the scene as it renders in an OpenGL window, use Manim Community 0.22 or later:
-
-```sh
-python -m manim --renderer=opengl --live-preview -qm Scripts/tester_manim.py DigitClassifier
-```
+The scene shows the input image, the class probabilities, and the prediction. Set `BRADBURY_SAMPLE` to a zero-based test image index to replay a specific example.

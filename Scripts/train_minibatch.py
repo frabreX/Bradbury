@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import json
+from pathlib import Path
 
 
 def softmax(Z_0):
@@ -13,9 +14,9 @@ def cross_entropy(softmax_o, y_true):
 
 
 #Saving the weights
-path = "weights.json"
-
-mnist_path = "mnist.npz"
+script_dir = Path(__file__).resolve().parent
+path = script_dir / "weights.json"
+mnist_path = script_dir / "mnist.npz"
 
 W1 = np.zeros((10, 784))
 b1 = np.zeros((10, 1))
